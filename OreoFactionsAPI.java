@@ -2,9 +2,13 @@ package com.oreofactions.api;
 
 import com.oreofactions.OreoFactionsPlugin;
 import com.oreofactions.api.events.*;
+import com.oreofactions.customitems.CustomItem;
+import com.oreofactions.customitems.CustomItemManager;
 import com.oreofactions.database.StorageProvider;
 import com.oreofactions.features.*;
 import com.oreofactions.managers.*;
+import com.oreofactions.messaging.CrossServerMessage;
+import com.oreofactions.messaging.RabbitMQManager;
 import com.oreofactions.models.FPlayer;
 import com.oreofactions.models.Faction;
 import com.oreofactions.models.FactionRole;
@@ -12,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.List;
@@ -1161,6 +1166,120 @@ public final class OreoFactionsAPI {
      */
     public UUID getMainAccount(UUID altUuid) {
         return plugin.getAltManager().getMainAccount(altUuid);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Misc
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Custom Items
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** Direct access to the CustomItemManager. */
+    public CustomItemManager getCustomItemManager() {
+        return plugin.getCustomItemManager();
+    }
+
+    /**
+     * Returns a CustomItem definition by its config key (case-insensitive).
+     */
+    public CustomItem getCustomItem(String id) {
+        return plugin.getCustomItemManager().getCustomItem(id);
+    }
+
+    /**
+     * Returns all loaded custom items.
+     */
+    public Collection<CustomItem> getAllCustomItems() {
+        return plugin.getCustomItemManager().getAllItems();
+    }
+
+    /**
+     * Builds a fresh ItemStack for the given custom item id with PDC tracking.
+     * Returns null if the id is unknown.
+     */
+    public ItemStack buildCustomItemStack(String id) {
+        return plugin.getCustomItemManager().buildItemStack(id);
+    }
+
+    /**
+     * Returns whether an ItemStack is a custom item (has PDC tracking data).
+     */
+    public boolean isCustomItem(ItemStack stack) {
+        return plugin.getCustomItemManager().isCustomItem(stack);
+    }
+
+    /**
+     * Returns the custom item id stored in an ItemStack's PDC, or null.
+     */
+    public String getCustomItemId(ItemStack stack) {
+        return plugin.getCustomItemManager().getItemId(stack);
+    }
+
+    /**
+     * Returns remaining uses on a custom item, or -1 for unlimited.
+     */
+    public int getRemainingUses(ItemStack stack) {
+        return plugin.getCustomItemManager().getRemainingUses(stack);
+    }
+
+    /**
+     * Manually sets remaining uses on a custom item (updates lore bar).
+     */
+    public void setRemainingUses(ItemStack stack, int uses) {
+        plugin.getCustomItemManager().setRemainingUses(stack, uses);
+    }
+
+    /**
+     * Returns remaining custom durability on a pickaxe item, or -1 if not tracked.
+     */
+    public int getRemainingDurability(ItemStack stack) {
+        return plugin.getCustomItemManager().getRemainingDurability(stack);
+    }
+
+    /**
+     * Manually sets remaining custom durability (updates lore bar).
+     */
+    public void setRemainingDurability(ItemStack stack, int durability) {
+        plugin.getCustomItemManager().setRemainingDurability(stack, durability);
+    }
+
+    /**
+     * Returns whether a player is currently on cooldown for the given custom item.
+     */
+    public boolean isOnCustomItemCooldown(UUID player, String itemId) {
+        return plugin.getCustomItemManager().isOnCooldown(player, itemId);
+    }
+
+    /**
+     * Returns the remaining cooldown in seconds, or 0.
+     */
+    public long getCustomItemCooldownSeconds(UUID player, String itemId) {
+        return plugin.getCustomItemManager().getCooldownRemainingSeconds(player, itemId);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Cross-server (RabbitMQ)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /** Returns the RabbitMQManager, or null if RabbitMQ is disabled. */
+    public RabbitMQManager getRabbitMQManager() {
+        return plugin.getRabbitMQManager();
+    }
+
+    /** Returns true if RabbitMQ is enabled and connected. */
+    public boolean isRabbitMQConnected() {
+        return plugin.isRabbitMQEnabled();
+    }
+
+    /**
+     * Publishes an arbitrary cross-server message directly.
+     * Does nothing if RabbitMQ is disabled.
+     */
+    public void publishCrossServerMessage(CrossServerMessage message) {
+        if (!plugin.isRabbitMQEnabled()) return;
+        plugin.getRabbitMQManager().publish(message);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
