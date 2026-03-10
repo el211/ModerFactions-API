@@ -1000,6 +1000,10 @@ public final class OreoFactionsAPI {
         if (event.isCancelled()) return false;
 
         Faction.WarpData warp = new Faction.WarpData(location, password);
+        // Record which server this warp is on for cross-server teleport support
+        if (plugin.getRabbitMQManager() != null) {
+            warp.setServer(plugin.getRabbitMQManager().getServerId());
+        }
         faction.getWarps().put(name, warp);
         saveFaction(faction);
         return true;
@@ -1060,6 +1064,10 @@ public final class OreoFactionsAPI {
         if (event.isCancelled()) return false;
 
         faction.setHome(location);
+        // Record which server the home is on for cross-server teleport support
+        if (plugin.getRabbitMQManager() != null) {
+            faction.setHomeServer(plugin.getRabbitMQManager().getServerId());
+        }
         saveFaction(faction);
         return true;
     }
