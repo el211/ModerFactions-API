@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction is about to be disbanded.
- * Cancelling prevents the disband.
- */
 public class FactionDisbandEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -23,12 +19,12 @@ public class FactionDisbandEvent extends FactionCancellableEvent {
         this.reason = reason;
     }
 
-    /** The player disbanding the faction, or null for non-player disbands. */
+    
     public Player getPlayer() {
         return player;
     }
 
-    /** Why the faction is being disbanded. */
+    
     public Reason getReason() {
         return reason;
     }

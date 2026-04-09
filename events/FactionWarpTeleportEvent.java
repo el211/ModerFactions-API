@@ -5,10 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a player is about to teleport to a faction warp.
- * Cancelling prevents the teleport.
- */
 public class FactionWarpTeleportEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -25,17 +21,17 @@ public class FactionWarpTeleportEvent extends FactionCancellableEvent {
         this.destination = destination;
     }
 
-    /** The player teleporting to the warp. */
+    
     public Player getPlayer() {
         return player;
     }
 
-    /** The name of the warp being used. */
+    
     public String getWarpName() {
         return warpName;
     }
 
-    /** The destination location of the warp. */
+    
     public Location getDestination() {
         return destination;
     }

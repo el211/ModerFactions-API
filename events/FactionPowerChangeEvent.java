@@ -4,10 +4,6 @@ import com.oreofactions.models.FPlayer;
 import com.oreofactions.models.Faction;
 import org.bukkit.event.HandlerList;
 
-/**
- * Informational event fired after a player's power changes and faction power is updated.
- * This event is NOT cancellable — listen to it for tracking/logging.
- */
 public class FactionPowerChangeEvent extends FactionEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -34,7 +30,7 @@ public class FactionPowerChangeEvent extends FactionEvent {
         this.reason = reason;
     }
 
-    /** The player whose power changed. */
+    
     public FPlayer getFPlayer() {
         return fPlayer;
     }

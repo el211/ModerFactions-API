@@ -5,10 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a warp is set or overwritten on a faction.
- * Cancelling prevents the warp from being saved.
- */
 public class FactionWarpSetEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -27,22 +23,22 @@ public class FactionWarpSetEvent extends FactionCancellableEvent {
         this.setter = setter;
     }
 
-    /** The name of the warp being set. */
+    
     public String getWarpName() {
         return warpName;
     }
 
-    /** The location of the new warp. */
+    
     public Location getLocation() {
         return location;
     }
 
-    /** The optional password for the warp, or null if none. */
+    
     public String getPassword() {
         return password;
     }
 
-    /** The player setting the warp. */
+    
     public Player getSetter() {
         return setter;
     }

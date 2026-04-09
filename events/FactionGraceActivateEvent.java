@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction grace period is about to be activated.
- * Cancelling prevents the grace period from being applied.
- */
 public class FactionGraceActivateEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -21,12 +17,12 @@ public class FactionGraceActivateEvent extends FactionCancellableEvent {
         this.durationMs = durationMs;
     }
 
-    /** The player activating grace, or null if done by API/admin. */
+    
     public Player getActivator() {
         return activator;
     }
 
-    /** Duration of the grace period in milliseconds. */
+    
     public long getDurationMs() {
         return durationMs;
     }

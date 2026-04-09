@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction is about to purchase an upgrade.
- * Cancelling prevents the upgrade from being purchased.
- */
 public class FactionUpgradeEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -28,27 +24,27 @@ public class FactionUpgradeEvent extends FactionCancellableEvent {
         this.buyer = buyer;
     }
 
-    /** The upgrade key being purchased (e.g. "members", "power", "claims"). */
+    
     public String getUpgradeKey() {
         return upgradeKey;
     }
 
-    /** The upgrade level before the purchase. */
+    
     public int getPreviousLevel() {
         return previousLevel;
     }
 
-    /** The upgrade level after the purchase. */
+    
     public int getNewLevel() {
         return newLevel;
     }
 
-    /** The points cost of this upgrade. */
+    
     public int getCost() {
         return cost;
     }
 
-    /** The player purchasing the upgrade. */
+    
     public Player getBuyer() {
         return buyer;
     }

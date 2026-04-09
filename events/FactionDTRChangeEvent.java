@@ -3,10 +3,6 @@ package com.oreofactions.api.events;
 import com.oreofactions.models.Faction;
 import org.bukkit.event.HandlerList;
 
-/**
- * Informational event fired after a faction's DTR changes.
- * Not cancellable — use for tracking/logging/scoreboards.
- */
 public class FactionDTRChangeEvent extends FactionEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();

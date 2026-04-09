@@ -6,10 +6,6 @@ import org.bukkit.event.HandlerList;
 
 import java.util.UUID;
 
-/**
- * Fired when a player is about to be invited to a faction.
- * Cancelling prevents the invite from being sent.
- */
 public class FactionInviteEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -23,12 +19,12 @@ public class FactionInviteEvent extends FactionCancellableEvent {
         this.inviter = inviter;
     }
 
-    /** UUID of the player being invited. */
+    
     public UUID getInvitedUUID() {
         return invited;
     }
 
-    /** The player sending the invite. */
+    
     public Player getInviter() {
         return inviter;
     }

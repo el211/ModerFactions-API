@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction's Vault economy balance is about to change.
- * Cancelling prevents the change.
- */
 public class FactionBalanceChangeEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -28,12 +24,12 @@ public class FactionBalanceChangeEvent extends FactionCancellableEvent {
         this.actor = actor;
     }
 
-    /** Balance before the change. */
+    
     public double getOldBalance() {
         return oldBalance;
     }
 
-    /** Balance after the change. Can be modified. */
+    
     public double getNewBalance() {
         return newBalance;
     }
@@ -42,12 +38,12 @@ public class FactionBalanceChangeEvent extends FactionCancellableEvent {
         this.newBalance = Math.max(0, newBalance);
     }
 
-    /** Whether this is a deposit, withdrawal, or admin set. */
+    
     public ChangeType getChangeType() {
         return changeType;
     }
 
-    /** The player making the change, or null if done by API/admin. */
+    
     public Player getActor() {
         return actor;
     }

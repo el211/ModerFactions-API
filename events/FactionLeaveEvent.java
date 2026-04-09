@@ -5,10 +5,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a player is about to leave their faction voluntarily.
- * Cancelling prevents the leave.
- */
 public class FactionLeaveEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -22,12 +18,12 @@ public class FactionLeaveEvent extends FactionCancellableEvent {
         this.fPlayer = fPlayer;
     }
 
-    /** The player leaving the faction. */
+    
     public Player getPlayer() {
         return player;
     }
 
-    /** The FPlayer data of the leaving player. */
+    
     public FPlayer getFPlayer() {
         return fPlayer;
     }

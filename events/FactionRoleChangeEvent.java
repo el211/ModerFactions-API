@@ -7,10 +7,6 @@ import org.bukkit.event.HandlerList;
 
 import java.util.UUID;
 
-/**
- * Fired when a faction member's role is about to change.
- * Cancelling prevents the role change.
- */
 public class FactionRoleChangeEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -29,22 +25,22 @@ public class FactionRoleChangeEvent extends FactionCancellableEvent {
         this.actor = actor;
     }
 
-    /** UUID of the member whose role is changing. */
+    
     public UUID getTarget() {
         return target;
     }
 
-    /** The role the member had before. */
+    
     public FactionRole getOldRole() {
         return oldRole;
     }
 
-    /** The role the member will have after the change. */
+    
     public FactionRole getNewRole() {
         return newRole;
     }
 
-    /** The player performing the role change, or null if done by API/admin. */
+    
     public Player getActor() {
         return actor;
     }

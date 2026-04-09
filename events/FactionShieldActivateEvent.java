@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction shield is about to be activated.
- * Cancelling prevents the shield from activating.
- */
 public class FactionShieldActivateEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -21,12 +17,12 @@ public class FactionShieldActivateEvent extends FactionCancellableEvent {
         this.durationMs = durationMs;
     }
 
-    /** The player activating the shield, or null if done by API/admin. */
+    
     public Player getActivator() {
         return activator;
     }
 
-    /** Duration the shield will be active in milliseconds. */
+    
     public long getDurationMs() {
         return durationMs;
     }

@@ -6,10 +6,6 @@ import org.bukkit.event.HandlerList;
 
 import java.util.UUID;
 
-/**
- * Fired when a player is about to be banned from a faction.
- * Cancelling prevents the ban.
- */
 public class FactionBanEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -23,12 +19,12 @@ public class FactionBanEvent extends FactionCancellableEvent {
         this.banner = banner;
     }
 
-    /** UUID of the player being banned. */
+    
     public UUID getBannedUUID() {
         return banned;
     }
 
-    /** The player performing the ban, or null if done by admin/API. */
+    
     public Player getBanner() {
         return banner;
     }

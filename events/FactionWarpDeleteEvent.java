@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction warp is about to be deleted.
- * Cancelling prevents deletion.
- */
 public class FactionWarpDeleteEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -21,12 +17,12 @@ public class FactionWarpDeleteEvent extends FactionCancellableEvent {
         this.actor = actor;
     }
 
-    /** The name of the warp being deleted. */
+    
     public String getWarpName() {
         return warpName;
     }
 
-    /** The player deleting the warp, or null if done by API/admin. */
+    
     public Player getActor() {
         return actor;
     }

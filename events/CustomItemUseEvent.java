@@ -7,10 +7,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * Fired when a player uses a custom item from customitems.yml.
- * Cancelling prevents the item's action from executing.
- */
 public class CustomItemUseEvent extends Event implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();

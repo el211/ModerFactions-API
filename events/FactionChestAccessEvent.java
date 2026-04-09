@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a player is about to open the faction chest.
- * Cancelling prevents the chest from opening.
- */
 public class FactionChestAccessEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -21,12 +17,12 @@ public class FactionChestAccessEvent extends FactionCancellableEvent {
         this.canWrite = canWrite;
     }
 
-    /** The player attempting to open the chest. */
+    
     public Player getPlayer() {
         return player;
     }
 
-    /** Whether the player has write permission to the chest. */
+    
     public boolean canWrite() {
         return canWrite;
     }

@@ -4,10 +4,6 @@ import com.oreofactions.models.Faction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction is about to unclaim a chunk.
- * Cancelling prevents the unclaim.
- */
 public class FactionUnclaimEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -21,12 +17,12 @@ public class FactionUnclaimEvent extends FactionCancellableEvent {
         this.player = player;
     }
 
-    /** The claim key being unclaimed (format: "world:chunkX:chunkZ"). */
+    
     public String getClaimKey() {
         return claimKey;
     }
 
-    /** The player unclaiming, or null if done programmatically. */
+    
     public Player getPlayer() {
         return player;
     }

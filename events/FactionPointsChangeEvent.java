@@ -3,10 +3,6 @@ package com.oreofactions.api.events;
 import com.oreofactions.models.Faction;
 import org.bukkit.event.HandlerList;
 
-/**
- * Fired when a faction's points balance is about to change.
- * Cancelling prevents the change.
- */
 public class FactionPointsChangeEvent extends FactionCancellableEvent {
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -24,12 +20,12 @@ public class FactionPointsChangeEvent extends FactionCancellableEvent {
         this.reason = reason;
     }
 
-    /** Points before the change. */
+    
     public int getOldAmount() {
         return oldAmount;
     }
 
-    /** Points after the change. Can be modified by listeners. */
+    
     public int getNewAmount() {
         return newAmount;
     }
@@ -38,7 +34,7 @@ public class FactionPointsChangeEvent extends FactionCancellableEvent {
         this.newAmount = Math.max(0, newAmount);
     }
 
-    /** Why the points are changing. */
+    
     public ChangeReason getReason() {
         return reason;
     }
