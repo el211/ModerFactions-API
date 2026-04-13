@@ -2,9 +2,12 @@
 
 [![](https://jitpack.io/v/el211/ModerFactions-API.svg)](https://jitpack.io/#el211/ModerFactions-API)
 
-The official public API for **ModernFactions** — a full-featured, GUI-first factions plugin for Paper/Spigot 1.20+.
+Official public API for **ModernFactions**.
 
-Use this dependency to listen to faction events, integrate with the faction system, and access the full manager API from any external plugin.
+Use this artifact to:
+- depend on the shared ModernFactions model and event classes
+- retrieve the live `ModernFactionsAPI` instance from your plugin
+- call stable public integration methods without depending on plugin internals
 
 ---
 
@@ -12,15 +15,13 @@ Use this dependency to listen to faction events, integrate with the faction syst
 
 - Java 17+
 - Paper / Spigot 1.20.4+
-- [ModernFactions](https://github.com/el211/OreoFactions) installed on the server
+- [ModernFactions](https://github.com/el211/ModerFactions) installed on the server
 
 ---
 
 ## Installation
 
 ### Maven
-
-Add the JitPack repository and the API dependency to your `pom.xml`:
 
 ```xml
 <repositories>
@@ -34,7 +35,7 @@ Add the JitPack repository and the API dependency to your `pom.xml`:
     <dependency>
         <groupId>com.github.el211</groupId>
         <artifactId>ModerFactions-API</artifactId>
-        <version>1.0.0</version>
+        <version>2.0.0</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
@@ -48,15 +49,26 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'com.github.el211:ModerFactions-API:1.0.0'
+    compileOnly 'com.github.el211:ModerFactions-API:2.0.0'
 }
 ```
 
-> Use `scope provided` / `compileOnly` — the full implementation is provided by the ModernFactions plugin JAR at runtime.
+Use `provided` / `compileOnly`. The implementation is supplied by the ModernFactions plugin at runtime.
 
 ---
 
-## Getting the API instance
+## plugin.yml
+
+Load after ModernFactions:
+
+```yaml
+depend:
+  - ModernFactions
+```
+
+---
+
+## Getting the API
 
 ```java
 import com.oreofactions.api.ModernFactionsAPI;
@@ -64,49 +76,38 @@ import com.oreofactions.api.ModernFactionsAPI;
 ModernFactionsAPI api = ModernFactionsAPI.get();
 ```
 
-Always call `get()` after the plugin has enabled. The safest place is in your own plugin's `onEnable` or in response to a `PluginEnableEvent`.
+Call `ModernFactionsAPI.get()` only after ModernFactions has enabled, typically in your own plugin's `onEnable()`.
 
 ---
 
 ## API Overview
 
-### Faction Queries
+### Faction queries
 
 ```java
-// Get a faction by tag
 Faction faction = api.getFaction("MyTag");
-
-// Get all factions
 Collection<Faction> all = api.getAllFactions();
-
-// Get top N factions by power
-List<Faction> top = api.getTopFactionsByPower(10);
-
-// Get the faction at a location
+List<Faction> topPower = api.getTopFactionsByPower(10);
+List<Faction> topPoints = api.getTopFactionsByPoints(10);
+boolean exists = api.factionExists("MyTag");
+int count = api.getFactionCount();
 Faction at = api.getFactionAt(player.getLocation());
-
-// Check if a chunk is claimed
 boolean claimed = api.isClaimed(chunk);
 ```
 
-### Player (FPlayer) Queries
+### Player queries
 
 ```java
-FPlayer fp = api.getFPlayer(player.getUniqueId());
-FPlayer fp = api.getOrCreateFPlayer(player);
+FPlayer fPlayer = api.getFPlayer(player.getUniqueId());
+FPlayer current = api.getOrCreateFPlayer(player);
 Faction playerFaction = api.getPlayerFaction(player.getUniqueId());
 ```
 
-### Faction Lifecycle
+### Faction lifecycle
 
 ```java
-// Create a faction (fires FactionCreateEvent)
-Faction f = api.createFaction("Tag", leader.getUniqueId(), leader);
-
-// Disband a faction (fires FactionDisbandEvent)
-api.disbandFaction(faction, actor, FactionDisbandEvent.Reason.COMMAND);
-
-// Persist changes
+Faction created = api.createFaction("Tag", player.getUniqueId(), player);
+api.disbandFaction(faction, player, FactionDisbandEvent.Reason.COMMAND);
 api.saveFaction(faction);
 api.saveFPlayer(fPlayer);
 ```
@@ -114,107 +115,73 @@ api.saveFPlayer(fPlayer);
 ### Members
 
 ```java
-api.addMember(faction, player);            // fires FactionJoinEvent
-api.removeMember(faction, player);         // fires FactionLeaveEvent
-api.kickMember(faction, target, kicker);   // fires FactionKickEvent
-api.banPlayer(faction, target, banner);    // fires FactionBanEvent
-api.invitePlayer(faction, invited, inviter); // fires FactionInviteEvent
-api.setRole(faction, target, FactionRole.OFFICER, actor); // fires FactionRoleChangeEvent
+api.addMember(faction, player);
+api.removeMember(faction, player);
+api.kickMember(faction, targetUuid, player);
+api.banPlayer(faction, targetUuid, player);
+api.invitePlayer(faction, targetUuid, player);
+api.setRole(faction, targetUuid, FactionRole.MODERATOR, player);
 ```
 
-### Claims
+### Claims and relations
 
 ```java
-api.claim(faction, chunk, player);          // fires FactionClaimEvent
-api.unclaim(faction, claimKey, player);     // fires FactionUnclaimEvent
-api.isClaimed(chunk);
-api.getFactionAt(location);
-```
-
-### Relations
-
-```java
-// Set relation between two factions (fires FactionRelationChangeEvent)
-api.setRelation(from, to, FactionRelationType.ALLY, actor);
-
+api.claim(faction, chunk, player);
+api.unclaim(faction, claimKey, player);
+api.setRelation(from, to, FactionRelationChangeEvent.RelationType.ALLY, player);
 api.isAlly(a, b);
 api.isEnemy(a, b);
 api.isTruce(a, b);
 ```
 
-### Power
+### Power, DTR, points, balance, TNT
 
 ```java
+api.getPlayerPower(player.getUniqueId());
 api.addPlayerPower(fPlayer, 5.0);
-api.removePlayerPower(fPlayer, 5.0);
+api.removePlayerPower(fPlayer, 2.5);
 api.setPlayerPower(fPlayer, 10.0);
 api.setFactionPower(faction, 100.0);
-api.getPlayerPower(uuid);
-```
 
-### DTR
-
-```java
 api.setDTR(faction, 3.0);
 api.freezeDTR(faction);
-```
 
-### Faction Balance
+api.addFactionPoints(faction, 100);
+api.removeFactionPoints(faction, 25);
+api.setFactionPoints(faction, 500);
+api.getFactionPoints(faction);
 
-```java
 api.depositBalance(faction, 500.0, player);
 api.withdrawBalance(faction, 100.0, player);
 api.setBalance(faction, 1000.0, player);
 api.getFactionBalance(faction);
-```
 
-### TNT Bank
-
-```java
 api.depositTNT(faction, 64, player);
 api.withdrawTNT(faction, 32, player);
 api.getTNTBank(faction);
 ```
 
-### Points
-
-```java
-api.addFactionPoints(faction, 100);
-api.removeFactionPoints(faction, 50);
-api.setFactionPoints(faction, 500);
-api.getFactionPoints(faction);
-```
-
-### Combat Tag
+### Combat, peaceful, shield, grace
 
 ```java
 api.combatTag(player, attacker);
-api.isInCombat(uuid);
-api.getCombatTagSecondsRemaining(uuid);
-api.removeCombatTag(uuid);
-```
+api.isInCombat(player.getUniqueId());
+api.getCombatTagSecondsRemaining(player.getUniqueId());
+api.removeCombatTag(player.getUniqueId());
 
-### Shield & Grace
+api.setPeaceful(faction, true, player);
+api.setPeaceful(faction, false, player, FactionPeacefulToggleEvent.ChangeReason.ADMIN);
 
-```java
-api.activateShield(faction, 3_600_000L, player);  // 1 hour
+api.activateShield(faction, 3_600_000L, player);
 api.hasShield(faction);
 api.deactivateShield(faction);
 
-api.activateGrace(faction, 1_800_000L, player);   // 30 min
+api.activateGrace(faction, 1_800_000L, player);
 api.hasGrace(faction);
 api.getGraceRemainingMs(faction);
 ```
 
-### Peaceful Toggle
-
-```java
-// fires FactionPeacefulToggleEvent
-api.setPeaceful(faction, true, player);
-api.setPeaceful(faction, false, player, FactionPeacefulToggleEvent.ChangeReason.ADMIN);
-```
-
-### Warps & Home
+### Warps, home, upgrades, permissions
 
 ```java
 api.setWarp(faction, "base", location, null, player);
@@ -223,198 +190,117 @@ api.teleportToWarp(faction, "base", player);
 
 api.setHome(faction, location, player);
 api.teleportToHome(faction, player);
-```
 
-### Upgrades
-
-```java
 api.getUpgradeLevel(faction, "tnt_capacity");
-api.purchaseUpgrade(faction, "tnt_capacity", buyer);
+api.purchaseUpgrade(faction, "tnt_capacity", player);
+
+api.hasPermission(faction, player.getUniqueId(), "access_chest");
 ```
 
-### Missions
+### Missions and audit
 
 ```java
+api.recordBlockMine(faction, material);
+api.recordKill(faction);
+api.recordEnemyKill(attackerFaction, victimFaction);
+api.recordClaim(faction);
+
 api.startMission(faction, "kill_enemies");
+api.cancelMission(faction, "kill_enemies");
 api.isMissionActive(faction, "kill_enemies");
 api.getMissionProgress(faction, "kill_enemies");
-api.cancelMission(faction, "kill_enemies");
+
+api.auditLog(faction, actorUuid, "KICK", "Kicked for inactivity");
 ```
 
-### Permissions
-
-```java
-api.hasPermission(faction, playerUuid, "access_chest");
-```
-
-### Faction Chest
+### Faction chest, reserves, caveblock, dynamite
 
 ```java
 ItemStack[] contents = api.loadFactionChest(faction);
 api.saveFactionChest(faction, contents);
 api.deleteFactionChest(faction);
 api.invalidateFactionChestCache(faction);
-```
 
-### Tag Reserves
-
-```java
 api.isReserveSystemEnabled();
 api.isReservedTag("MyTag");
 api.canClaimReservedTag("MyTag", playerUuid);
 api.reserveTag("MyTag", playerUuid);
 api.unreserveTag("MyTag");
-```
 
-### CaveBlock
-
-```java
 api.isPlayerInCaveBlock(playerUuid);
 api.isTrackedCaveBlock(location);
 api.placeCaveBlock(player, blockLocation, uses);
 api.interactWithCaveBlock(player, blockLocation);
 api.breakCaveBlock(player, blockLocation);
 api.exitCaveBlock(player);
-```
 
-### Dynamite
-
-```java
 DynamiteConfig cfg = api.getDynamiteConfig();
 api.throwDynamite(player, cfg);
 api.isDynamiteProjectile(entity);
 api.getDynamiteProjectileConfig(projectileUuid);
 ```
 
-### Scoreboard
+### Scoreboard, custom items, cross-server
 
 ```java
 api.refreshFactionScoreboards();
 api.refreshFactionScoreboard(player);
 api.clearFactionScoreboard(player);
 api.reloadFactionScoreboards();
-```
 
-### Custom Items
-
-```java
 api.isCustomItem(stack);
 api.getCustomItemId(stack);
 api.getRemainingUses(stack);
 api.setRemainingUses(stack, 3);
 api.isOnCustomItemCooldown(playerUuid, "my_item");
-```
 
-### Audit Log
-
-```java
-api.auditLog(faction, actorUuid, "KICK", "Kicked for inactivity");
-```
-
-### Alt Detection
-
-```java
-api.isAlt(uuid);
-api.getMainAccount(altUuid);
-```
-
-### Cross-Server (RabbitMQ)
-
-```java
 api.isRabbitMQConnected();
-api.publishCrossServerMessage(new CrossServerMessage(...));
-```
-
-### Raw Manager Access
-
-Every internal manager is also directly accessible if you need deeper control:
-
-```java
-api.getFactionManager()
-api.getPlayerManager()
-api.getClaimManager()
-api.getRelationManager()
-api.getPowerManager()
-api.getCombatManager()
-api.getUpgradeManager()
-api.getMissionManager()
-api.getGraceManager()
-api.getShieldManager()
-api.getAuditManager()
-api.getAltManager()
-api.getDiscordManager()
-api.getAntiSpamManager()
-api.getCheckManager()
-api.getReserveManager()
-api.getCaveBlockManager()
-api.getDynamiteManager()
-api.getFactionChestManager()
-api.getWarpTeleportManager()
-api.getFactionScoreboardManager()
-api.getCustomItemManager()
-api.getStorageProvider()
-api.getMongoDBManager()     // null when using SQLite
-api.getVaultEconomy()
-api.getLangManager()
-api.getGuiManager()
-api.getAdventure()
-```
-
-### Config Files
-
-```java
-api.getUpgradesConfig()
-api.getPowerConfig()
-api.getPermissionsConfig()
-api.getDiscordConfig()
-api.getFactionShopConfig()
-api.getMissionsConfig()
-api.getChatConfig()
-api.getLangConfig()
-api.getGuiConfig()
+api.publishCrossServerMessage(new CrossServerMessage());
 ```
 
 ---
 
 ## Events
 
-All events are in the `com.oreofactions.api.events` package. Cancellable events extend `FactionCancellableEvent` and can be cancelled to block the action.
+All events are in `com.oreofactions.api.events`.
+
+Cancellable events extend `FactionCancellableEvent` and can be cancelled to block the underlying action.
 
 | Event | Cancellable | Fired when |
 |---|---|---|
-| `FactionCreateEvent` | ✅ | A faction is created |
-| `FactionDisbandEvent` | ✅ | A faction is disbanded |
-| `FactionJoinEvent` | ✅ | A player joins a faction |
-| `FactionLeaveEvent` | ✅ | A player leaves a faction |
-| `FactionKickEvent` | ✅ | A player is kicked |
-| `FactionBanEvent` | ✅ | A player is banned |
-| `FactionInviteEvent` | ✅ | A player is invited |
-| `FactionRoleChangeEvent` | ✅ | A member's role changes |
-| `FactionClaimEvent` | ✅ | Land is claimed |
-| `FactionUnclaimEvent` | ✅ | Land is unclaimed |
-| `FactionRelationChangeEvent` | ✅ | Ally / enemy / truce state changes |
-| `FactionPowerChangeEvent` | ❌ | A player or faction's power changes |
-| `FactionDTRChangeEvent` | ❌ | DTR changes |
-| `FactionPointsChangeEvent` | ❌ | Points change |
-| `FactionBalanceChangeEvent` | ❌ | Faction bank balance changes |
-| `FactionTNTBankChangeEvent` | ❌ | TNT bank changes |
-| `FactionCombatTagEvent` | ✅ | A player is combat-tagged |
-| `FactionShieldActivateEvent` | ✅ | Shield is activated |
-| `FactionGraceActivateEvent` | ✅ | Grace period starts |
-| `FactionPeacefulToggleEvent` | ✅ | Peaceful state toggled |
-| `FactionRaidableEvent` | ❌ | A faction becomes raidable |
-| `FactionUpgradeEvent` | ✅ | An upgrade is purchased |
-| `FactionMissionStartEvent` | ✅ | A mission starts |
-| `FactionMissionCompleteEvent` | ❌ | A mission is completed |
-| `FactionWarpSetEvent` | ✅ | A warp is set |
-| `FactionWarpDeleteEvent` | ✅ | A warp is deleted |
-| `FactionWarpTeleportEvent` | ✅ | A player teleports to a warp |
-| `FactionHomeSetEvent` | ✅ | Faction home is set |
-| `FactionHomeTeleportEvent` | ✅ | A player teleports to faction home |
-| `FactionChestAccessEvent` | ✅ | Faction chest is opened |
-| `CustomItemUseEvent` | ✅ | A custom item is used |
+| `FactionCreateEvent` | yes | A faction is created |
+| `FactionDisbandEvent` | yes | A faction is disbanded |
+| `FactionJoinEvent` | yes | A player joins a faction |
+| `FactionLeaveEvent` | yes | A player leaves a faction |
+| `FactionKickEvent` | yes | A player is kicked |
+| `FactionBanEvent` | yes | A player is banned |
+| `FactionInviteEvent` | yes | A player is invited |
+| `FactionRoleChangeEvent` | yes | A member role changes |
+| `FactionClaimEvent` | yes | Land is claimed |
+| `FactionUnclaimEvent` | yes | Land is unclaimed |
+| `FactionRelationChangeEvent` | yes | Relation state changes |
+| `FactionPowerChangeEvent` | no | Power changes |
+| `FactionDTRChangeEvent` | no | DTR changes |
+| `FactionPointsChangeEvent` | no | Points change |
+| `FactionBalanceChangeEvent` | no | Balance changes |
+| `FactionTNTBankChangeEvent` | no | TNT bank changes |
+| `FactionCombatTagEvent` | yes | A player is combat tagged |
+| `FactionShieldActivateEvent` | yes | A shield is activated |
+| `FactionGraceActivateEvent` | yes | Grace starts |
+| `FactionPeacefulToggleEvent` | yes | Peaceful state changes |
+| `FactionRaidableEvent` | no | A faction becomes raidable |
+| `FactionUpgradeEvent` | yes | An upgrade is purchased |
+| `FactionMissionStartEvent` | yes | A mission starts |
+| `FactionMissionCompleteEvent` | no | A mission completes |
+| `FactionWarpSetEvent` | yes | A warp is set |
+| `FactionWarpDeleteEvent` | yes | A warp is deleted |
+| `FactionWarpTeleportEvent` | yes | A player teleports to a warp |
+| `FactionHomeSetEvent` | yes | Faction home is set |
+| `FactionHomeTeleportEvent` | yes | A player teleports home |
+| `FactionChestAccessEvent` | yes | Faction chest access is attempted |
+| `CustomItemUseEvent` | yes | A custom item is used |
 
-### Example — listening to an event
+### Example listener
 
 ```java
 import com.oreofactions.api.events.FactionCreateEvent;
@@ -425,10 +311,7 @@ public class MyListener implements Listener {
 
     @EventHandler
     public void onFactionCreate(FactionCreateEvent event) {
-        // Cancel faction creation
         event.setCancelled(true);
-
-        // Or read the data
         String tag = event.getFaction().getTag();
     }
 }
@@ -436,14 +319,16 @@ public class MyListener implements Listener {
 
 ---
 
-## plugin.yml dependency
+## API Scope
 
-Add ModernFactions as a dependency in your `plugin.yml` to ensure it loads first:
+This artifact exposes the stable public contract:
+- `ModernFactionsAPI`
+- `ModernFactionsProvider`
+- shared models
+- shared DTOs
+- public events
 
-```yaml
-depend:
-  - ModernFactions
-```
+It does not expose the plugin's internal manager or config objects to external plugins.
 
 ---
 
