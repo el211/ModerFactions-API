@@ -1,8 +1,6 @@
 jdk:
   - openjdk17
 
-before_install:
-  - sdk install java 17.0.8-open
-
 install:
+  - mvn install:install-file -Dfile=libs/ModernFactions-1.0.1.jar -DgroupId=com.oreofactions -DartifactId=modernfactions -Dversion=1.0.1 -Dpackaging=jar -DgeneratePom=true
   - mvn install -DskipTests --batch-mode

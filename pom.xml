@@ -42,10 +42,6 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
             <id>smartinvs-repo</id>
             <url>https://raw.github.com/dominicfeliton/SmartInvs/bukkit-maven-repo</url>
         </repository>
@@ -64,11 +60,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Main ModernFactions plugin — provides Faction, FPlayer, all managers, etc. -->
+        <!-- Main ModernFactions plugin — provides Faction, FPlayer, all managers, etc.
+             The source is closed; the JAR is bundled in libs/ and installed by jitpack.yml. -->
         <dependency>
-            <groupId>com.github.el211</groupId>
-            <artifactId>OreoFactions</artifactId>
-            <version>main-SNAPSHOT</version>
+            <groupId>com.oreofactions</groupId>
+            <artifactId>modernfactions</artifactId>
+            <version>1.0.1</version>
             <scope>provided</scope>
         </dependency>
 
